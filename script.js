@@ -225,8 +225,10 @@ function initMainMap() {
     dragging: true
   });
 
+  var STADIA_API_KEY = 'ac4366c6-d3c7-4f8b-85fd-0e87a1202622';
+
   L.tileLayer(
-    'https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png',
+    'https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=' + STADIA_API_KEY,
     {
       attribution: 'map tiles by <a href="https://stamen.com">stamen design</a>, &copy; <a href="https://stadiamaps.com">stadia maps</a>, data &copy; <a href="https://openstreetmap.org">osm</a>',
       maxZoom: 20
