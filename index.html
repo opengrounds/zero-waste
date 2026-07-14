@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>open:grounds / zero waste, davis</title>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 90'><rect width='90' height='90' fill='%232F4D22'/><path d='M33 20 H57 V28 L62 36 V72 C62 76 58 79 54 79 H36 C32 79 28 76 28 72 V36 L33 28 Z' fill='%23F7F4EC' stroke='%232F4D22' stroke-width='2'/><rect x='33' y='20' width='24' height='8' fill='%23FF5722'/><line x1='32' y1='50' x2='58' y2='50' stroke='%232F9BD6' stroke-width='2.5'/><line x1='32' y1='60' x2='58' y2='60' stroke='%232F9BD6' stroke-width='2.5'/></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+          <rect width="90" height="90" fill="#2F4D22"/>
+          <path d="M33 20 H57 V28 L62 36 V72 C62 76 58 79 54 79 H36 C32 79 28 76 28 72 V36 L33 28 Z" fill="#F7F4EC" stroke="#2F4D22" stroke-width="2"/>
+          <rect x="33" y="20" width="24" height="8" fill="#FF5722"/>
+          <line x1="32" y1="50" x2="58" y2="50" stroke="#2F9BD6" stroke-width="2.5"/>
+          <line x1="32" y1="60" x2="58" y2="60" stroke="#2F9BD6" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <div class="wordmark">
+        <div class="brand-title">open<span class="punct">:</span><span class="ital">grounds</span></div>
+        <div class="brand-sub">zero waste / davis, ca</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-secondary" onclick="openAbout()">about</button>
+    </div>
+  </header>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="places" onclick="switchTab('places')">
+      <span class="tab-icon"><i class="fa-solid fa-location-dot"></i></span> places
+    </button>
+    <button class="tab-btn" data-tab="daytrips" onclick="switchTab('daytrips')">
+      <span class="tab-icon"><i class="fa-solid fa-bus"></i></span> day trips
+    </button>
+    <button class="tab-btn" data-tab="guide" onclick="switchTab('guide')">
+      <span class="tab-icon"><i class="fa-solid fa-clipboard-check"></i></span> what to bring
+    </button>
+    <button class="tab-btn" data-tab="products" onclick="switchTab('products')">
+      <span class="tab-icon"><i class="fa-solid fa-thumbtack"></i></span> starter swaps
+    </button>
+    <button class="tab-btn" data-tab="diy" onclick="switchTab('diy')">
+      <span class="tab-icon"><i class="fa-solid fa-mortar-pestle"></i></span> diy
+    </button>
+    <button class="tab-btn" data-tab="resources" onclick="switchTab('resources')">
+      <span class="tab-icon"><i class="fa-brands fa-readme"></i></span> resources
+    </button>
+  </div>
+
+
+  <!-- ============================================================
+       TAB: PLACES
+       ============================================================ -->
+  <div class="tab-panel active" id="tab-places">
+
+    <!-- welcome strip - the quote comes first, on purpose. it's the
+         opener before anyone's even looked at a single place, a direct
+         counterweight to the "zero waste means owning one jar of trash
+         a year" version of this that scares newcomers off. the nudge
+         to the guide tabs follows underneath. -->
+    <div class="welcome-strip">
+      <div class="welcome-quote">"we don't need a handful of people doing zero waste perfectly. we need millions of people doing it imperfectly."<span class="welcome-quote-attr">- anne-marie bonneau</span></div>
+      <span class="welcome-text">new to zero waste? start with <button class="welcome-link" onclick="switchTab('guide')">what to bring</button>, then use this map to find the places.</span>
+    </div>
+
+    <!-- category filter bar -->
+    <div class="places-filter" id="places-filter">
+      <button class="filter-btn active" data-cat="all" onclick="filterPlaces('all')">all</button>
+    </div>
+
+    <!-- category description - explains what the active filter means -->
+    <div class="cat-description" id="cat-description"></div>
+
+    <!-- places list + map side by side -->
+    <div class="places-layout">
+      <div class="places-list" id="places-list">
+        <!-- populated by script.js -->
+      </div>
+      <div class="places-map-wrap">
+        <div id="main-map"></div>
+      </div>
+    </div>
+
+    <div id="geo-indicator">
+      <span id="geo-indicator-dot"></span>
+      <span id="geo-indicator-text">resolving addresses...</span>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       TAB: DAY TRIPS
+       refill shops beyond davis, reachable without a car. separate
+       from the places tab since these aren't on the davis map.
+       ============================================================ -->
+  <div class="tab-panel" id="tab-daytrips">
+    <div class="editorial-body" style="max-width:760px;">
+
+      <div class="ed-hero">
+        <div class="ed-eyebrow">no car required</div>
+        <h2 class="ed-title">day trips</h2>
+        <p class="ed-lede">davis covers the basics, but some of the best refill shops in the region are a bike ride and a train away. everything here has been reached by bike, amtrak, or bus. i've been to all but the last two, and a trip to rainbow grocery is in the works! tap a place for step-by-step directions with no car needed.</p>
+      </div>
+
+      <div class="daytrip-list" id="daytrip-list">
+        <!-- populated by script.js -->
+      </div>
+
+      <div class="daytrip-closed" id="daytrip-closed">
+        <!-- populated by script.js -->
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       TAB: WHAT TO BRING
+       ============================================================ -->
+  <div class="tab-panel" id="tab-guide">
+    <div class="editorial-body">
+
+      <div class="ed-hero">
+        <div class="ed-eyebrow">the zero waste kit</div>
+        <h2 class="ed-title">what to bring</h2>
+        <p class="ed-lede">the hardest part of zero waste shopping is remembering the right things. once it becomes a habit - bag by the door, jar in the backpack - the friction disappears.</p>
+      </div>
+
+      <div class="ed-section">
+        <div class="ed-section-label">at the farmers market</div>
+        <div class="kit-list">
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/mesh.png" alt=""></div>
+            <div>
+              <div class="kit-item-name">mesh produce bags</div>
+              <div class="kit-item-desc">loose fruit and veg go straight in. if i'm stopping by uppercrrust, i can use my mesh bag for the bread/pastries too.</div>
+            </div>
+          </div>
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/bread.svg" alt=""></div>
+            <div>
+              <div class="kit-item-name">cloth bag or pillowcase for bread</div>
+              <div class="kit-item-desc">any pillowcase works. most bakery vendors at the davis farmers market will put your loaf directly into it. uppercrrust is also a good place to get freshly baked bread and pastries without packaging, not all of their bread is but you can call in advance to have them set aside a loaf for you without packaging to pick up.</div>
+            </div>
+          </div>
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/tote.png" alt=""></div>
+            <div>
+              <div class="kit-item-name">tote bag</div>
+              <div class="kit-item-desc">obvious, but useless if it stays at home. keep one in your bag permanently. on each of my commonly used purses and bags i have a clip-on collapsible tote so i never forget it. if i'm biking i use my pannier duchy market bag instead as i can wear it like a sholder sling bag and then clip it on to my bike when it's time to head home.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ed-section">
+        <div class="ed-section-label">at the co-op</div>
+        <div class="ed-section-note">a couple of these are shaped by how i eat, i'm vegetarian, so dairy and eggs show up below. if that's not your diet, the same habits still apply elsewhere: vegans can bring jars for oats, nut butters, tofu, and grains from the same bulk bins. meat eaters can bring a container straight to the butcher counter or deli and ask them to weigh it and fill it there, the same way you'd tare a jar for bulk goods. the method is the same no matter what's going in the container.</div>
+        <div class="kit-list">
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/mason.png" alt=""></div>
+            <div>
+              <div class="kit-item-name">glass jars</div>
+              <div class="kit-item-desc">weigh empty at the counter, fill from the bulk bins, pay by weight. wide-mouth mason jars work best for grains, spices, nuts, coffee. bring a few different sizes.</div>
+            </div>
+          </div>
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/funnel.png" alt=""></div>
+            <div>
+              <div class="kit-item-name">a reusable funnel</div>
+              <div class="kit-item-desc">the co-op keeps paper funnels by the bulk bins, but they're primarily single-use. i use the base of an <a href="https://www.ikea.com/us/en/p/oeverst-metal-coffee-filter-stainless-steel-90360234/" target="_blank">IKEA ÖVERST steel coffee filter ↗</a> - just the base, not the filter mesh part. since it's stainless steel and dishwasher safe i can use it over and over again for multiple purposes such as making my coffee but it also works great as a funnel on any jar or bottle. it's very useful when working with dry goods like oats, rice, and beans or placing spices in a smaller lid container without creating a mess.</div>
+            </div>
+          </div>
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/bottle.svg" alt=""></div>
+            <div>
+              <div class="kit-item-name">empty bottles for the refill station</div>
+              <div class="kit-item-desc">bring your own bottles for soap, shampoo, and cleaning products. you can use jars as well if you haven't bought a particular product before. weigh the empty container first at the tare station near the refill section, then fill. i am a die hard fan of dr bronner's soaps in both the baby unscented and peppermint scents so i reuse by plastic bottle i bought from dr bronners and refill them with their respective scents since i more easily recognize the scent based on label color. i make sure to cross out the barcode on all of my bottles before refilling so it doesn't get mistaken for a new packaged product, refilling is much cheaper than buying new.</div>
+            </div>
+          </div>
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/dairy.png" alt=""></div>
+            <div>
+              <div class="kit-item-name">your old dairy containers if applicable</div>
+              <div class="kit-item-desc">at the davis food co-op they carry straus branded dairy in returnable glass. it comes with a (now increased) $3 deposit fee at checkout, which is not often factored into the price label at the store depends on which store you go to. you pay the bottle deposit at checkout and when you are finished return the empty bottle on your next visit. most places such as davis food co-op will have you get your deposit back through a refund at checkout, i place the milk bottle last and i get my $3 back on my recipt. make sure you check with your local store for their specific policies as some require an extra step of visiting customer service to get your deposit back before checkout. so far in my experience davis food co-op is the only place in davis with returnable glass containers for dairy.</div>
+            </div>
+          </div>
+
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/egg.png" alt=""></div>
+            <div>
+              <div class="kit-item-name">empty egg carton</div>
+              <div class="kit-item-desc">davis food co-op has eggs in bulk as well, i cross out the barcode as well on the carton before refilling so it doesn't get mistaken for a new packaged product. instead of the co-op i also opt for finding excess eggs from friends who have chickens!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="howto-label">how to refill at the bulk station</div>
+        <div class="ed-section-note">every store runs this a little differently. davis food co-op has a self-serve scale and lists weight in both lb and oz, with numbered bins. berkeley bowl tares for you at the counter, also in both lb and oz, prints a sticker with the weight, you fill it, then they weigh and re-sticker it at checkout. reup refills tares in oz only and skips bin numbers entirely, you just tell them the product name. the steps below are the general shape of it. ask a staff member what's different at your store, most are happy to walk you through it the first time.</div>
+        <div class="howto-steps">
+          <div class="howto-step">
+            <div class="howto-step-icon"><img src="icons/howto-scale.svg" alt=""></div>
+            <div class="howto-step-content">
+              <div class="howto-step-num">step 1</div>
+              <div class="howto-step-title">weigh your empty container</div>
+              <div class="howto-step-body">before you fill anything, bring your empty jar or bottle to the scale near the bulk section (usually right by the entrance to bulk or the refill wall) and note the "tare" weight, that's the weight of the container itself, so you're not charged for it. some stores weigh it themselves rather than letting you use the scale.</div>
+            </div>
+          </div>
+          <div class="howto-step">
+            <div class="howto-step-icon"><img src="icons/howto-label.svg" alt=""></div>
+            <div class="howto-step-content">
+              <div class="howto-step-num">step 2</div>
+              <div class="howto-step-title">label it with the tare weight</div>
+              <div class="howto-step-body">write the tare weight directly on a piece of masking tape on the jar, or on a scrap of paper from the pad at the scale. some stations print a small sticker with the weight and a bin/PLU number, stick that on instead.</div>
+            </div>
+          </div>
+          <div class="howto-step">
+            <div class="howto-step-icon"><img src="icons/howto-scoop.svg" alt=""></div>
+            <div class="howto-step-content">
+              <div class="howto-step-num">step 3</div>
+              <div class="howto-step-title">fill from the bin or dispenser</div>
+              <div class="howto-step-body">for dry bulk bins, use the attached scoop to fill your jar, then close the bin lever fully so nothing spills for the next person. for the liquid refill station, place your bottle under the pump nozzle and dispense slowly - most pumps measure by the pull, not a steady stream.</div>
+            </div>
+          </div>
+          <div class="howto-step">
+            <div class="howto-step-icon"><img src="icons/howto-note.svg" alt=""></div>
+            <div class="howto-step-content">
+              <div class="howto-step-num">step 4</div>
+              <div class="howto-step-title">note the item or bin number</div>
+              <div class="howto-step-body">jot down the bin number or product name so the cashier can ring it up correctly, most bulk bins have a number and a PLU code posted right on the label above the bin. some stores skip bin numbers entirely and just want the product name.</div>
+            </div>
+          </div>
+          <div class="howto-step">
+            <div class="howto-step-icon"><img src="icons/howto-checkout.svg" alt=""></div>
+            <div class="howto-step-content">
+              <div class="howto-step-num">step 5</div>
+              <div class="howto-step-title">check out like normal</div>
+              <div class="howto-step-body">the cashier weighs your full container, subtracts the tare weight you noted, and charges you only for the product. keep the jar, next time you refill, it's already tared and ready to go.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ed-section">
+        <div class="ed-section-label">everyday</div>
+        <div class="kit-list">
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/mug.svg" alt=""></div>
+            <div>
+              <div class="kit-item-name">travel mug</div>
+              <div class="kit-item-desc">Mishka's, Pachamama Coffee, and Peet's will all fill your own mug in Davis - Starbucks will too, with a tracking sticker on the cup. worth checking the places tab for which ones also serve "for here" drinks in real glassware, since that policy varies by shop (and sometimes by hot vs. cold drink).</div>
+            </div>
+          </div>
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/bento.svg" alt=""></div>
+            <div>
+              <div class="kit-item-name">silicone bags or containers</div>
+              <div class="kit-item-desc">replace ziplock bags for leftovers, snacks, lunches. Stasher bags are the most popular - dishwasher safe, last years. see the products tab.</div>
+            </div>
+          </div>
+          <div class="kit-item">
+            <div class="kit-item-glyph"><img src="icons/razor.svg" alt=""></div>
+            <div>
+              <div class="kit-item-name">safety razor</div>
+              <div class="kit-item-desc">a one-time purchase that eliminates plastic cartridges permanently. blades are recyclable - take them to Recology (not the curbside bin) when you have a pile.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       TAB: PRODUCTS
+       ============================================================ -->
+  <div class="tab-panel" id="tab-products">
+    <div class="editorial-body">
+
+      <div class="ed-hero">
+        <div class="ed-eyebrow">worth buying</div>
+        <h2 class="ed-title">starter swaps</h2>
+        <p class="ed-lede">this isn't a shopping list. most zero waste is about buying less. these are the specific things where a one-time purchase genuinely eliminates years of disposables.</p>
+      </div>
+
+      <div class="ed-section">
+        <div class="ed-section-label">kitchen</div>
+        <div class="product-rows">
+          <div class="product-row">
+            <div class="product-row-name">Stasher Bags</div>
+            <div class="product-row-body">silicone zip bags that replace ziplock for leftovers, snacks, meal prep. dishwasher and microwave safe, last for years. available at the co-op or at <a href="https://www.stasherbag.com" target="_blank">stasherbag.com</a>.</div>
+          </div>
+          <div class="product-row">
+            <div class="product-row-name">Beeswax Wraps</div>
+            <div class="product-row-body">replaces plastic wrap for covering bowls and wrapping cheese. reusable for a year or more, compostable at end of life. Marleys Monsters makes good ones - see below.</div>
+          </div>
+          <div class="product-row">
+            <div class="product-row-name">Cloth Produce Bags</div>
+            <div class="product-row-body">for bulk bins and the farmers market. mesh or muslin, washable. a set of 5–6 handles almost everything.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ed-section">
+        <div class="ed-section-label">cleaning &amp; body care</div>
+        <div class="product-rows">
+          <div class="product-row">
+            <div class="product-row-name">Dr. Bronner's Castile Soap</div>
+            <div class="product-row-body">one product that replaces dozens - body wash, shampoo, dish soap, household cleaner, laundry. buy the large jug, refill smaller bottles from it. available in bulk at the co-op, so you can bring a jar. <a href="https://www.drbronner.com" target="_blank">drbronner.com</a>.</div>
+          </div>
+          <div class="product-row">
+            <div class="product-row-name">Shampoo &amp; Conditioner Bars</div>
+            <div class="product-row-body">lather like regular shampoo, no plastic bottle. last longer than liquid bottles per wash. available at the co-op and various online shops.</div>
+          </div>
+          <div class="product-row">
+            <div class="product-row-name">Safety Razor</div>
+            <div class="product-row-body">the handle is a one-time purchase (Merkur, Edwin Jagger, or Rockwell are reliable starting points, ~$30–45). only the double-edge blades replace. blades are recyclable at Recology - never in the curbside bin.</div>
+          </div>
+          <div class="product-row">
+            <div class="product-row-name">Sunscreen (Attitude / Badger Balm)</div>
+            <div class="product-row-body">mineral sunscreen, mostly plastic tubes with a few metal-tin options depending on the line. I use and love both, Attitude for daily wear and Badger Balm for anything more active. <a href="https://attitudeliving.com" target="_blank">attitudeliving.com</a>, <a href="https://www.badgerbalm.com" target="_blank">badgerbalm.com</a>.</div>
+          </div>
+        </div>
+
+        <div class="ed-section-note">sunscreen is the one place I'd tell you to set all of the above aside if it doesn't work for you. there's real discourse right now about mineral sunscreen leaving a white cast or a heavy texture, and I feel that firsthand as someone with brown skin, the cast shows up more on me and I've just made peace with dealing with it. but sun protection matters more than packaging. buy whatever sunscreen you'll actually wear and reapply, even if that means a plastic bottle from the drugstore. if you want to push on the packaging side, email the company directly and ask for a metal tin or refill option, that does more good than skipping sunscreen to avoid plastic.</div>
+      </div>
+
+      <div class="ed-section">
+        <div class="ed-section-label">paper replacements</div>
+        <div class="product-rows">
+          <div class="product-row">
+            <div class="product-row-name">Marleys Monsters UNpaper Towels</div>
+            <div class="product-row-body">reusable cloth "paper" towels that snap together on a roll to look and work exactly like regular paper towels. one of the best-known zero waste swaps. <a href="https://www.marleysmonsters.com" target="_blank">marleysmonsters.com</a>.</div>
+          </div>
+          <div class="product-row">
+            <div class="product-row-name">Reusable Cotton Rounds</div>
+            <div class="product-row-body">replaces single-use cotton pads for makeup removal or skincare. washable and reusable for years. Marleys Monsters makes a good set.</div>
+          </div>
+          <div class="product-row">
+            <div class="product-row-name">Bamboo Toothbrush</div>
+            <div class="product-row-body">handle composts; pull the nylon bristles before composting. available at the co-op. not a huge category, but a permanent no-effort swap.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ed-store-card">
+        <div class="ed-store-eyebrow">good online store</div>
+        <div class="ed-store-name">Marleys Monsters</div>
+        <div class="ed-store-body">small-batch zero waste goods made in Eugene, OR. UNpaper towels, cloth napkins, cotton rounds, beeswax wraps, produce bags, travel kits. a reliable first stop when you want the reusable version of something disposable. ships from the Pacific Northwest - <a href="https://www.marleysmonsters.com" target="_blank">marleysmonsters.com</a>.</div>
+      </div>
+
+      <div class="ed-store-card">
+        <div class="ed-store-eyebrow">good online store</div>
+        <div class="ed-store-name">Zerra &amp; Co.</div>
+        <div class="ed-store-body">zero waste makeup brand, online-only but with a real container return program, send back your empty glass or metal containers for store credit instead of tossing them. I order eyeliner here, and the mascara (glass vial, refillable) is worth a look too. <a href="https://zerraco.com" target="_blank">zerraco.com</a>.</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       TAB: DIY
+       ============================================================ -->
+  <div class="tab-panel" id="tab-diy">
+    <div class="editorial-body">
+
+      <div class="ed-hero">
+        <div class="ed-eyebrow">make it yourself</div>
+        <h2 class="ed-title">diy</h2>
+        <p class="ed-lede">a few things are cheaper and just as good homemade, and they're a good excuse to finally use up the empty jars you've been saving. start small, this isn't meant to replace everything on the starter swaps tab.</p>
+      </div>
+
+      <div class="ed-section">
+        <div class="ed-section-label">body care</div>
+
+        <div class="diy-card">
+          <div class="diy-card-name">Baking Soda Deodorant</div>
+          <div class="diy-card-body">the fastest jar-to-recipe ratio on this whole site. mix it, apply it, done. a good use for an empty Booda Butter jar or any small glass jar you've got sitting around.</div>
+
+          <div class="diy-subhead">what you need</div>
+          <div class="diy-chips">
+            <span class="diy-chip">baking soda</span>
+            <span class="diy-chip">tea tree oil, a few drops</span>
+            <span class="diy-chip">reused glass jar</span>
+            <span class="diy-chip">reusable cotton round or clean fingers</span>
+          </div>
+
+          <div class="diy-subhead">method</div>
+          <div class="diy-steps">
+            <div class="diy-step"><span class="diy-step-num">1</span><span>stir baking soda with a few drops of tea tree oil in your jar until it's a slightly damp, sandy texture. add more of either until you like the consistency.</span></div>
+            <div class="diy-step"><span class="diy-step-num">2</span><span>pat a small amount onto dry underarms with a reusable cotton round or clean fingers. a little goes a long way.</span></div>
+            <div class="diy-step"><span class="diy-step-num">3</span><span>keep the jar somewhere dry. since you're only using a pinch at a time, it lasts a long while.</span></div>
+          </div>
+
+          <div class="diy-note">baking soda can irritate sensitive skin. patch test on your inner arm first, and if it stings or causes a rash, skip this one, a store-bought sensitive-skin deodorant is a perfectly good call instead.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       TAB: RESOURCES
+       ============================================================ -->
+  <div class="tab-panel" id="tab-resources">
+    <div class="editorial-body">
+
+      <div class="ed-hero">
+        <div class="ed-eyebrow">online &amp; community</div>
+        <h2 class="ed-title">resources</h2>
+        <p class="ed-lede">some of the most useful zero waste infrastructure isn't a physical place - it's community swap groups, local wikis, and the habit of checking before buying.</p>
+      </div>
+
+      <!-- the quote lives here, not as decoration but as a direct
+           response to the newcomer anxiety of "I can't do this right" -->
+      <blockquote class="ed-quote">
+        <p class="ed-quote-text">"we don't need a handful of people doing zero waste perfectly. we need millions of people doing it imperfectly."</p>
+        <cite class="ed-quote-attr">- anne-marie bonneau, zero-waste chef</cite>
+      </blockquote>
+
+      <div class="ed-section">
+        <div class="ed-section-label">community swap</div>
+        <div class="resource-rows">
+          <div class="resource-row">
+            <div class="resource-row-head">
+              <div class="resource-row-name">Buy Nothing Davis / Yolo County</div>
+              <a class="btn btn-secondary" href="https://www.facebook.com/groups/buynothingdavis/" target="_blank">find group →</a>
+            </div>
+            <div class="resource-row-body">facebook groups organized by neighborhood where people give away things they no longer need - no buying, no trading, just gifting. furniture, clothes, food, plants, tools, baby gear. search "buy nothing davis" or "buy nothing [your neighborhood]" to find the closest group.</div>
+            <div class="resource-row-rule">check here before buying anything. seriously.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ed-section">
+        <div class="ed-section-label">local knowledge</div>
+        <div class="resource-rows">
+          <div class="resource-row">
+            <div class="resource-row-head">
+              <div class="resource-row-name">Davis Wiki</div>
+              <a class="btn btn-secondary" href="https://daviswiki.org" target="_blank">daviswiki.org →</a>
+            </div>
+            <div class="resource-row-body">community-written guide to everything in Davis. if you're looking for something specific - a repair shop, a local resource, an event - search here first before googling. updated by locals, not algorithms.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ed-section">
+        <div class="ed-section-label">ethical clothing</div>
+        <div class="clothing-steps">
+          <div class="clothing-step">
+            <div class="clothing-step-num">1</div>
+            <div class="clothing-step-content">
+              <div class="clothing-step-title">buy secondhand first</div>
+              <div class="clothing-step-body">Community Mercantile and Aggie Reuse Store before buying anything new. Buy Nothing Davis before spending any money at all. Depop and ThredUp for secondhand online, ask your reseller to package your item in eco-friendly or recyclable materials.</div>
+            </div>
+          </div>
+          <div class="clothing-step">
+            <div class="clothing-step-num">2</div>
+            <div class="clothing-step-content">
+              <div class="clothing-step-title">repair what you have</div>
+              <div class="clothing-step-body">a torn seam or broken zipper isn't a reason to throw something away. yololab Repair Café can teach you how to do small clothing repairs. basic hand-stitching takes 20 minutes to learn and fixes 80% of clothing problems. you can even repair your own socks through a technique called "darning".</div>
+            </div>
+          </div>
+          <div class="clothing-step">
+            <div class="clothing-step-num">3</div>
+            <div class="clothing-step-content">
+              <div class="clothing-step-title">if buying new, choose natural fibers</div>
+              <div class="clothing-step-body">synthetic fabrics (polyester, nylon, acrylic) shed microplastics every wash. organic cotton, linen, wool, and hemp don't. look for GOTS certification.</div>
+            </div>
+          </div>
+          <div class="clothing-step">
+            <div class="clothing-step-num">4</div>
+            <div class="clothing-step-content">
+              <div class="clothing-step-title">better brands when buying new</div>
+              <div class="clothing-step-body">Patagonia (repair program, used gear), The North Face (repair program), Eileen Fisher (take-back program), Prana (fair trade + recycled), Thought Clothing (organic + natural fibers). none are perfect but all are substantially better than fast fashion.</div>
+            </div>
+          </div>
+          <div class="clothing-step">
+            <div class="clothing-step-num">!</div>
+            <div class="clothing-step-content">
+              <div class="clothing-step-title">avoid fast fashion</div>
+              <div class="clothing-step-body">Shein, Zara, H&amp;M, and similar brands rely on extremely short production cycles, low wages, and low-quality materials designed to be worn a few times and discarded. the cost is paid elsewhere, in labor and in waste.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ABOUT MODAL -->
+  <div class="modal-backdrop" id="about-modal">
+    <div class="modal-outer modal-outer--about">
+      <div class="modal">
+        <div class="modal-header modal-header--about">
+          <div class="about-hero">
+            <div class="about-hero-wordmark">open<span class="punct">:</span><span class="ital">grounds</span></div>
+            <div class="about-hero-sub">a researched guide to zero waste</div>
+            <div class="about-hero-loc">&#x25CE; davis, california</div>
+          </div>
+          <button class="modal-close modal-close--about" onclick="closeAbout()">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+          <blockquote class="about-quote">
+            <p class="about-quote-text">"we don't need a handful of people doing zero waste perfectly. we need millions of people doing it imperfectly."</p>
+            <cite class="about-quote-attr">- anne-marie bonneau</cite>
+          </blockquote>
+          <p class="about-text">
+            every place in the places tab has been checked by hand - no open submissions, so what you see has actually been verified to exist. the guide tabs (what to bring, starter swaps, resources) are editorial - opinionated but not sponsored.
+          </p>
+          <div class="about-divider"><span>made by</span></div>
+          <div class="about-byline">
+            <a href="https://zahrabaxi.com" target="_blank" class="about-byline-name">zahra baxi</a>
+            <span class="about-byline-meta">davis, ca &middot; <a href="https://github.com/opengrounds/zerowaste" target="_blank">open source</a> &middot; <a href="https://opengrounds.github.io" target="_blank">all open:grounds projects</a></span>
+          </div>
+          <button class="btn btn-submit" style="margin-top:1.25rem" onclick="closeAbout()">close &#x2715;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL DRAWER -->
+  <div class="drawer-backdrop" id="drawer-backdrop">
+    <div class="drawer" id="drawer">
+      <button class="drawer-close" id="drawer-close" aria-label="close">&#x2715;</button>
+      <div class="drawer-content" id="drawer-content"></div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1468 @@
+/*
+  open:grounds - styles.css
+  zero waste, davis - tabbed layout
+*/
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --paper:      #F7F4EC;
+  --paper-dim:  #ECE6D9;
+  --ink:        #15130F;
+  --pink:       #FF3E86;
+  --sky:        #2F9BD6;
+  --grass:      #2F4D22;
+  --flame:      #FF5722;
+  --sun:        #FFC53D;
+  --plum:       #8B5CF6;
+  --stone:      #75695A;
+  --border: 3px solid var(--ink);
+}
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  line-height: 1.6;
+  height: 100%;
+  overflow: hidden; /* page never scrolls - tabs do */
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header {
+  border-bottom: var(--border);
+  padding: 0 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  background: var(--paper);
+  height: 56px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.brand { display: flex; align-items: center; gap: 0.75rem; }
+.brand-mark { width: 40px; height: 40px; flex-shrink: 0; }
+.brand-mark svg { width: 100%; height: 100%; display: block; }
+
+.wordmark { display: flex; flex-direction: column; gap: 0.1rem; }
+.brand-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.brand-title .punct { font-weight: 100; color: var(--flame); }
+.brand-title .ital  { font-weight: 100; font-style: italic; color: var(--pink); }
+.brand-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.header-right { display: flex; gap: 0.5rem; align-items: center; }
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 1rem;
+  border: var(--border);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  white-space: nowrap;
+  transition: background 0.1s, color 0.1s, transform 0.08s;
+}
+.btn:hover  { background: var(--ink); color: var(--paper); }
+.btn:active { transform: translate(2px, 2px); }
+
+.btn-secondary {
+  border-width: 2px;
+  font-size: 0.72rem;
+  color: var(--stone);
+  border-color: rgba(21,19,15,0.3);
+  height: 32px;
+}
+.btn-secondary:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.btn-submit {
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.65rem 1.4rem;
+  height: auto;
+  border: var(--border);
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.08s;
+}
+.btn-submit:hover { opacity: 0.85; }
+
+
+/* ============================================================
+   TAB BAR
+   ============================================================ */
+.tab-bar {
+  display: flex;
+  border-bottom: var(--border);
+  background: var(--paper);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+
+.tab-btn {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  padding: 0 1.25rem;
+  height: 44px;
+  border: none;
+  border-right: 2px solid rgba(21,19,15,0.15);
+  background: var(--paper);
+  color: var(--stone);
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  position: relative;
+  transition: color 0.1s, background 0.1s;
+  flex-shrink: 0;
+}
+.tab-btn:hover { color: var(--ink); background: var(--paper-dim); }
+.tab-btn.active {
+  color: var(--ink);
+  background: var(--paper);
+}
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--ink);
+}
+.tab-icon { font-size: 0.9rem; }
+.tab-icon-img {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+  display: inline-block;
+}
+
+
+/* ============================================================
+   TAB PANELS - the outer shell takes up all remaining height
+   ============================================================ */
+.tab-panel {
+  display: none;
+  flex: 1;
+  overflow: hidden;
+}
+.tab-panel.active { display: flex; flex-direction: column; }
+
+/* the whole app is a column flex from body down */
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* ============================================================
+   PLACES TAB
+   ============================================================ */
+
+/* welcome strip - one-sentence orientation for newcomers,
+   sits above the filter bar. warm, not instructional. */
+.welcome-strip {
+  padding: 0.6rem 1rem;
+  background: var(--paper-dim);
+  border-bottom: 2px solid rgba(21,19,15,0.12);
+  font-size: 0.78rem;
+  color: var(--stone);
+  flex-shrink: 0;
+}
+.welcome-quote {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+}
+.welcome-quote-attr {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--flame);
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+.welcome-text { line-height: 1.5; }
+.welcome-link {
+  background: none;
+  border: none;
+  border-bottom: 2px solid var(--flame);
+  color: var(--flame);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+.welcome-link:hover { color: var(--ink); border-color: var(--ink); }
+
+/* category description - short plain-english explainer shown
+   when a category filter is active. helps newcomers understand
+   what "refill & bulk" or "tool library" actually means for them
+   before they see the list of places. hidden when 'all' active. */
+.cat-description {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--stone);
+  padding: 0.6rem 1rem;
+  background: var(--paper);
+  border-bottom: 2px solid rgba(21,19,15,0.12);
+  flex-shrink: 0;
+  display: none;
+}
+.cat-description.visible { display: block; }
+.cat-description strong { color: var(--ink); font-weight: 700; }
+
+/* filter bar - scrollable row of category pills */
+.places-filter {
+  display: flex;
+  gap: 0;
+  border-bottom: var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  background: var(--paper);
+}
+.places-filter::-webkit-scrollbar { display: none; }
+
+.filter-btn {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0 1rem;
+  height: 36px;
+  border: none;
+  border-right: 2px solid rgba(21,19,15,0.12);
+  background: var(--paper);
+  color: var(--stone);
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.1s, color 0.1s;
+  flex-shrink: 0;
+}
+.filter-btn:hover { background: var(--paper-dim); color: var(--ink); }
+.filter-btn.active { background: var(--ink); color: var(--paper); }
+.filter-swatch {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--c, var(--stone));
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   EDITORIAL QUOTE (resources tab + about modal)
+   the Anne-Marie Bonneau quote - styled as a real blockquote,
+   not a decorative pull-quote. warm and prominent enough to
+   actually read, not just scan past.
+   ============================================================ */
+
+.ed-quote {
+  margin: 0 0 2.5rem 0;
+  padding: 1.4rem 1.6rem;
+  background: var(--ink);
+  border-left: 5px solid var(--flame);
+  box-shadow: 5px 5px 0 var(--flame);
+}
+
+.ed-quote-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--paper);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.65rem;
+}
+
+.ed-quote-attr {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(247,244,236,0.55);
+  font-style: normal;
+}
+
+/* same quote, lighter treatment inside the about modal */
+.about-quote {
+  margin: 0 0 1.25rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--paper-dim);
+  border-left: 4px solid var(--flame);
+}
+
+.about-quote-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.about-quote-attr {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-style: normal;
+}
+
+/* split: list left, map right */
+.places-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  grid-template-rows: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.places-list {
+  overflow-y: auto;
+  border-right: var(--border);
+}
+
+.places-map-wrap {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+#main-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* individual place rows in the list */
+.place-row {
+  padding: 0.9rem 1rem;
+  border-bottom: 2px solid rgba(21,19,15,0.12);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.place-row:hover { background: var(--paper-dim); }
+.place-row.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+.place-row.active .place-row-addr,
+.place-row.active .listing-tag { opacity: 0.75; }
+
+.place-row-cat {
+  display: inline-block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper);
+  padding: 0.15rem 0.45rem;
+  margin-bottom: 0.35rem;
+}
+
+.place-row-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+
+.place-row-addr {
+  font-size: 0.7rem;
+  font-style: italic;
+  color: var(--stone);
+  margin-bottom: 0.4rem;
+}
+
+.place-row-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.4rem;
+}
+
+.place-parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.place-part-chip {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.45rem;
+  border: 1.5px solid rgba(21,19,15,0.2);
+  color: var(--stone);
+}
+.place-row.active .place-part-chip {
+  border-color: rgba(247,244,236,0.3);
+  color: rgba(247,244,236,0.7);
+}
+
+.places-empty {
+  padding: 2rem 1rem;
+  font-size: 0.8rem;
+  color: var(--stone);
+  font-style: italic;
+}
+
+/* shared listing tags (used in list rows + drawer) */
+.listing-tag {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border: 1.5px solid rgba(21,19,15,0.25);
+  color: var(--stone);
+}
+
+/* geo indicator */
+#geo-indicator {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.7rem;
+  padding: 0.4rem 0.8rem;
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 50;
+  pointer-events: none;
+  letter-spacing: 0.06em;
+}
+#geo-indicator.visible { display: flex; }
+#geo-indicator-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--flame);
+  animation: dot-pulse 1s infinite;
+}
+
+
+/* ============================================================
+   EDITORIAL TABS (guide, products, diy, resources)
+   ============================================================ */
+.tab-panel#tab-guide,
+.tab-panel#tab-products,
+.tab-panel#tab-diy,
+.tab-panel#tab-resources,
+.tab-panel#tab-daytrips {
+  overflow-y: auto;
+}
+
+.editorial-body {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* hero block */
+.ed-hero {
+  margin-bottom: 3rem;
+  padding-bottom: 2.5rem;
+  border-bottom: var(--border);
+}
+
+.ed-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--flame);
+  margin-bottom: 0.6rem;
+}
+
+.ed-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 0.9rem;
+}
+
+.ed-lede {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: var(--stone);
+  max-width: 520px;
+}
+
+/* section within editorial tab */
+.ed-section {
+  margin-bottom: 2.75rem;
+}
+
+.ed-section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  border-top: 2px solid var(--ink);
+  padding-top: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+/* dietary acknowledgment note - sits under a section label when the
+   items below it (dairy, eggs) reflect one way of eating rather than
+   a universal default. same left-accent treatment as resource-row-rule,
+   but as a short paragraph instead of a single line. */
+.ed-section-note {
+  font-size: 0.78rem;
+  line-height: 1.75;
+  color: var(--stone);
+  border-left: 3px solid var(--flame);
+  padding-left: 0.9rem;
+  margin-bottom: 1.5rem;
+  max-width: 560px;
+}
+
+/* kit list - what to bring items */
+.kit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.kit-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(21,19,15,0.1);
+}
+.kit-item:last-child { border-bottom: none; }
+
+.kit-item-glyph {
+  line-height: 1;
+  flex-shrink: 0;
+  width: 4.5rem;
+  text-align: center;
+  margin-top: 0.1rem;
+}
+.kit-item-glyph img {
+  width: 68px;
+  height: 68px;
+  display: inline-block;
+}
+.kit-item-glyph i {
+  font-size: 2.6rem;
+  color: var(--ink);
+}
+
+.kit-item-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.kit-item-desc {
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--stone);
+}
+
+/* product rows */
+.product-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.product-row {
+  padding: 1.1rem 0;
+  border-bottom: 1px solid rgba(21,19,15,0.1);
+}
+.product-row:last-child { border-bottom: none; }
+
+.product-row-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.product-row-body {
+  font-size: 0.8rem;
+  line-height: 1.75;
+  color: var(--stone);
+}
+.product-row-body a {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration-color: var(--stone);
+}
+.product-row-body a:hover { color: var(--flame); }
+
+/* ============================================================
+   DIY TAB - recipe cards for homemade swaps. same bordered,
+   offset-shadow treatment as resource-row, with an ingredient
+   chip row and a short numbered method.
+   ============================================================ */
+.diy-card {
+  border: var(--border);
+  padding: 1.6rem;
+  box-shadow: 5px 5px 0 var(--ink);
+  margin-bottom: 1.75rem;
+}
+.diy-card-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 0.6rem;
+}
+.diy-card-body {
+  font-size: 0.82rem;
+  line-height: 1.75;
+  color: var(--stone);
+  margin-bottom: 1.25rem;
+}
+.diy-subhead {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 0.5rem;
+}
+.diy-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 1.3rem;
+}
+.diy-chip {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border: 1.5px solid rgba(21,19,15,0.2);
+  color: var(--ink);
+}
+.diy-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 0.5rem;
+}
+.diy-step {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--stone);
+}
+.diy-step-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: var(--flame);
+  flex-shrink: 0;
+}
+.diy-note {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--stone);
+  margin-top: 1rem;
+  border-top: 1px solid rgba(21,19,15,0.12);
+  padding-top: 0.75rem;
+}
+
+/* store card callout */
+.ed-store-card {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1.75rem;
+  margin-top: 2rem;
+  box-shadow: 6px 6px 0 var(--flame);
+}
+
+.ed-store-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--flame);
+  margin-bottom: 0.5rem;
+}
+
+.ed-store-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.65rem;
+}
+
+.ed-store-body {
+  font-size: 0.82rem;
+  line-height: 1.8;
+  color: rgba(247,244,236,0.75);
+}
+.ed-store-body a {
+  color: var(--sky);
+  font-weight: 700;
+  text-decoration: none;
+}
+.ed-store-body a:hover { text-decoration: underline; }
+
+/* resource rows */
+.resource-rows { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.resource-row {
+  border: var(--border);
+  padding: 1.25rem;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.resource-row-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.resource-row-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.resource-row-body {
+  font-size: 0.8rem;
+  line-height: 1.75;
+  color: var(--stone);
+  margin-bottom: 0.5rem;
+}
+
+.resource-row-rule {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: var(--flame);
+  border-left: 3px solid var(--flame);
+  padding-left: 0.6rem;
+}
+
+/* clothing hierarchy */
+.clothing-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.clothing-step {
+  display: flex;
+  align-items: stretch;
+  border: var(--border);
+  border-bottom: none;
+}
+.clothing-step:last-child {
+  border-bottom: var(--border);
+  background: rgba(21,19,15,0.03);
+}
+
+.clothing-step-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  width: 48px;
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: var(--border);
+  color: var(--flame);
+  background: rgba(255,87,34,0.06);
+}
+
+.clothing-step-content {
+  padding: 0.9rem 1.1rem;
+  flex: 1;
+}
+
+.clothing-step-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  margin-bottom: 0.3rem;
+}
+
+.clothing-step-body {
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--stone);
+}
+
+/* how-to steps - a quiet vertical timeline, not a bordered table.
+   a single connecting line runs behind a column of circular
+   illustration badges; text sits to the right, unboxed. */
+.howto-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--stone);
+  margin: 1.4rem 0 0.9rem;
+}
+
+.howto-steps {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.howto-steps::before {
+  content: '';
+  position: absolute;
+  left: 47px;
+  top: 40px;
+  bottom: 40px;
+  width: 1px;
+  background: rgba(21,19,15,0.14);
+}
+
+.howto-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.3rem;
+  padding: 1.4rem 0;
+}
+.howto-step:first-child { padding-top: 0; }
+.howto-step:last-child { padding-bottom: 0; }
+
+.howto-step-icon {
+  position: relative;
+  z-index: 1;
+  width: 96px;
+  height: 96px;
+  min-width: 96px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1.5px solid rgba(21,19,15,0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.howto-step-icon img {
+  width: 56px;
+  height: 56px;
+  display: block;
+}
+
+.howto-step-content {
+  flex: 1;
+  padding-top: 0.5rem;
+}
+
+.howto-step-num {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--flame);
+  margin-bottom: 0.3rem;
+}
+
+.howto-step-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.35rem;
+}
+
+.howto-step-body {
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--stone);
+}
+
+
+/* ============================================================
+   DAY TRIPS TAB
+   ============================================================ */
+.daytrip-list {
+  border: var(--border);
+  margin-top: 1.5rem;
+}
+.daytrip-card {
+  cursor: pointer;
+  position: relative;
+}
+.daytrip-card:not(:last-child) { border-bottom: 2px solid rgba(21,19,15,0.12); }
+
+.trip-badge {
+  display: inline-block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tc);
+  border: 1.5px solid var(--tc);
+  padding: 0.1rem 0.4rem;
+  margin-left: 0.4rem;
+  margin-bottom: 0.35rem;
+  vertical-align: middle;
+}
+
+.daytrip-closed {
+  margin-top: 1.5rem;
+}
+.daytrip-closed-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 0.5rem;
+}
+.daytrip-closed-row {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--stone);
+  padding: 0.4rem 0;
+}
+.daytrip-closed-row strong { color: var(--ink); text-decoration: line-through; }
+
+
+/* transit directions inside the drawer */
+.transit-summary {
+  border: 2px solid var(--ink);
+  background: var(--paper-dim);
+  padding: 0.85rem 0.9rem;
+  margin: 0.5rem 0 1.2rem;
+}
+.transit-summary-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 0.35rem;
+}
+.transit-summary-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  margin-bottom: 0.25rem;
+}
+.transit-summary-time {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--stone);
+}
+
+.transit-steps {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.6rem;
+}
+.transit-steps::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 30px;
+  bottom: 30px;
+  width: 1px;
+  background: rgba(21,19,15,0.14);
+}
+.transit-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 0.9rem 0;
+}
+.transit-step:first-child { padding-top: 0; }
+.transit-step:last-child { padding-bottom: 0; }
+.transit-step-icon {
+  position: relative;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1.5px solid rgba(21,19,15,0.25);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.transit-step-icon i { font-size: 1.05rem; }
+.transit-step-content { flex: 1; padding-top: 0.15rem; }
+.transit-step-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  margin-bottom: 0.25rem;
+}
+.transit-step-body {
+  font-size: 0.76rem;
+  line-height: 1.65;
+  color: var(--stone);
+}
+.transit-disclaimer {
+  font-size: 0.68rem;
+  font-style: italic;
+  color: var(--stone);
+  margin-bottom: 1.3rem;
+}
+
+/* photo gallery */
+.photo-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.photo-item {
+  display: block;
+  border: 2px solid var(--ink);
+  overflow: hidden;
+  text-decoration: none;
+}
+.photo-item img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+.photo-caption {
+  font-size: 0.65rem;
+  color: var(--ink);
+  padding: 0.3rem 0.4rem;
+  background: var(--paper-dim);
+}
+.photo-gallery-empty {
+  font-size: 0.76rem;
+  font-style: italic;
+  color: var(--stone);
+  border: 1.5px dashed rgba(21,19,15,0.25);
+  padding: 0.8rem 0.9rem;
+}
+
+
+/* ============================================================
+   DETAIL DRAWER
+   ============================================================ */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(21,19,15,0.45);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+
+.drawer {
+  position: absolute;
+  top: 0; right: 0;
+  height: 100%;
+  width: 100%;
+  max-width: 440px;
+  background: var(--paper);
+  border-left: var(--border);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.drawer-backdrop.open .drawer { transform: translateX(0); }
+
+.drawer-close {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  z-index: 5;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  width: 32px; height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: color 0.1s, transform 0.1s;
+}
+.drawer-close:hover { color: var(--flame); transform: translate(-1px,-1px); }
+
+.drawer-content {
+  overflow-y: auto;
+  padding: 3.5rem 1.4rem 2rem;
+  flex: 1;
+}
+
+.drawer-cat {
+  display: inline-block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--cat-color);
+  padding: 0.18rem 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.drawer-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 0.35rem;
+}
+
+.drawer-addr {
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--stone);
+  margin-bottom: 0.8rem;
+}
+
+.drawer-desc {
+  font-size: 0.82rem;
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+
+.drawer-note {
+  font-size: 0.8rem;
+  line-height: 1.7;
+  font-style: italic;
+  color: var(--stone);
+  border-left: 3px solid var(--flame);
+  padding-left: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.drawer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.drawer-verified {
+  font-size: 0.65rem;
+  font-style: italic;
+  color: var(--grass);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 1.3rem;
+}
+.drawer-verified::before { content: '✓'; font-style: normal; }
+
+.drawer-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.drawer-parts-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 0.5rem;
+}
+
+.drawer-part {
+  border: 2px solid rgba(21,19,15,0.15);
+  padding: 0.85rem 0.9rem;
+  margin-bottom: 0.65rem;
+}
+.drawer-part:last-child { margin-bottom: 0; }
+
+.drawer-part-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.drawer-part-name::before {
+  content: '';
+  width: 7px; height: 7px;
+  background: var(--cat-color);
+  border: 1.5px solid var(--ink);
+  flex-shrink: 0;
+}
+
+.drawer-part-desc {
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+.drawer-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--paper-dim);
+  border: 2px solid var(--ink);
+  padding: 0.3rem 0.6rem;
+  text-decoration: none;
+  transition: background 0.1s, color 0.1s;
+}
+.drawer-pdf:hover { background: var(--ink); color: var(--paper); }
+
+
+/* ============================================================
+   ABOUT MODAL
+   ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(21,19,15,0.5);
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: auto; }
+
+.modal-outer { width: 100%; max-width: 520px; }
+
+.modal-outer--about .modal {
+  background: var(--paper);
+  border: var(--border);
+  box-shadow: 7px 7px 0 var(--ink);
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+@keyframes modal-pop-in {
+  from { transform: translateY(18px) scale(0.97); opacity: 0; }
+  to   { transform: translateY(0) scale(1);       opacity: 1; }
+}
+.modal-backdrop.open .modal-outer {
+  animation: modal-pop-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.modal-header--about {
+  background: var(--ink);
+  padding: 1.75rem 1.5rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.about-hero-wordmark {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: var(--paper);
+  letter-spacing: -0.02em;
+}
+.about-hero-wordmark .punct { font-weight: 100; color: var(--flame); }
+.about-hero-wordmark .ital  { font-weight: 100; font-style: italic; color: var(--pink); }
+
+.about-hero-sub {
+  font-size: 0.78rem;
+  color: rgba(247,244,236,0.6);
+  margin-top: 0.25rem;
+}
+.about-hero-loc {
+  font-size: 0.72rem;
+  color: rgba(247,244,236,0.4);
+  margin-top: 0.2rem;
+  letter-spacing: 0.05em;
+}
+
+.modal-close--about {
+  background: transparent;
+  border: 1.5px solid rgba(247,244,236,0.3);
+  color: rgba(247,244,236,0.6);
+  font-size: 1rem;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.15s, border-color 0.15s, transform 0.3s;
+}
+.modal-close--about:hover {
+  color: var(--paper);
+  border-color: var(--paper);
+  transform: rotate(90deg);
+}
+
+.modal-body { padding: 1.5rem; }
+
+.about-text {
+  font-size: 0.82rem;
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+}
+
+.about-divider {
+  text-align: center;
+  position: relative;
+  margin: 1.25rem 0 1rem;
+}
+.about-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 1px;
+  background: rgba(21,19,15,0.15);
+}
+.about-divider span {
+  position: relative;
+  background: var(--paper);
+  padding: 0 0.6rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.about-byline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.5rem;
+}
+.about-byline-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.about-byline-name:hover { color: var(--pink); }
+.about-byline-meta {
+  font-size: 0.72rem;
+  color: var(--stone);
+}
+.about-byline-meta a {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--stone);
+}
+.about-byline-meta a:hover { color: var(--pink); }
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 700px) {
+  .places-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 240px;
+  }
+  .places-list {
+    border-right: none;
+    border-bottom: var(--border);
+  }
+  .places-map-wrap { position: relative; }
+
+  .editorial-body { padding: 1.75rem 1rem 3rem; }
+  .ed-title { font-size: 1.8rem; }
+}
+
+@media (max-width: 440px) {
+  .tab-btn { padding: 0 0.85rem; font-size: 0.72rem; }
+  .kit-item-glyph { width: 3.5rem; }
+  .kit-item-glyph img { width: 52px; height: 52px; }
+  .kit-item-glyph i { font-size: 2rem; }
+  .howto-step-icon { width: 68px; height: 68px; min-width: 68px; }
+  .howto-step-icon img { width: 38px; height: 38px; }
+  .howto-steps::before { left: 33px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
